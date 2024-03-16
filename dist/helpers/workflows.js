@@ -10,7 +10,7 @@ const getUptimeMonitorVersion = async () => {
         return release;
     const octokit = await github_1.getOctokit();
     const releases = await octokit.repos.listReleases({
-        owner: "upptime",
+        owner: "AndyWebServices",
         repo: "uptime-monitor",
         per_page: 1,
     });
@@ -29,7 +29,7 @@ const introComment = async () => `#
 # 🔼 Upptime @${await exports.getUptimeMonitorVersion()}
 # GitHub-powered open-source uptime monitor and status page by Anand Chowdhary
 
-# * Source: https://github.com/upptime/upptime
+# * Source: https://github.com/AndyWebServices/upptime
 # * Docs and more: https://upptime.js.org
 # * More by Anand Chowdhary: https://anandchowdhary.com
 `;
@@ -130,11 +130,23 @@ jobs:
           ref: \${{ github.head_ref }}
           token: \${{ secrets.GH_PAT || github.token }}
       - name: Update template
-        uses: upptime/uptime-monitor@${await exports.getUptimeMonitorVersion()}
+        uses: AndyWebServices/uptime-monitor@${await exports.getUptimeMonitorVersion()}
         with:
           command: "update-template"
         env:
           GH_PAT: \${{ secrets.GH_PAT || github.token }}
+      - name: Install Root CA certificate
+        run: |
+          echo "$ROOT_CA" | sudo tee /usr/local/share/ca-certificates/custom_root_ca.crt > /dev/null
+          sudo update-ca-certificates
+        env:
+          ROOT_CA: \${{ secrets.ROOT_CA }}
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: \${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: \${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
       - name: Update response time
         uses: upptime/uptime-monitor@${await exports.getUptimeMonitorVersion()}
         with:
@@ -266,7 +278,7 @@ jobs:
           ref: \${{ github.head_ref }}
           token: \${{ secrets.GH_PAT || github.token }}
       - name: Update template
-        uses: upptime/uptime-monitor@master
+        uses: AndyWebServices/uptime-monitor@master
         with:
           command: "update-template"
         env:
@@ -325,6 +337,18 @@ jobs:
         with:
           ref: \${{ github.head_ref }}
           token: \${{ secrets.GH_PAT || github.token }}
+      - name: Install Root CA certificate
+        run: |
+          echo "$ROOT_CA" | sudo tee /usr/local/share/ca-certificates/custom_root_ca.crt > /dev/null
+          sudo update-ca-certificates
+        env:
+          ROOT_CA: \${{ secrets.ROOT_CA }}
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: \${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: \${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
       - name: Check endpoint status
         uses: upptime/uptime-monitor@${await exports.getUptimeMonitorVersion()}
         with:

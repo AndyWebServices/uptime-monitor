@@ -21,7 +21,7 @@ export const run = async () => {
   console.log(`
 
 🔼 Upptime @${await getUptimeMonitorVersion()}
-GitHub-powered open-source uptime monitor and status page by Anand Chowdhary
+GitHub-powered open-source uptime monitor and status page by Anand Chowdhary. Modified by AndyWebServices
 
 * Source: https://github.com/upptime/upptime
 * Docs and more: https://upptime.js.org
